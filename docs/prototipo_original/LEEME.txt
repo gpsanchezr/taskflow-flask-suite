@@ -1,0 +1,3 @@
+Copia SIN MODIFICAR del prototipo generado por el agente (vibe coding).
+Los numeros de linea del informe de auditoria (app.py:82, app.py:163-182, etc.)
+se refieren a app_original.py. El codigo corregido esta en ../../app.py.

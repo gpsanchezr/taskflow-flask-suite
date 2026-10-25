@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Mis tareas{% endblock %}
+{% block body %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="wordmark" href="{{ url_for('index') }}"><span class="brand-mark">p.</span> pausa</a>
+    <div class="sidebar-label">TU ESPACIO</div>
+    <nav class="filters" aria-label="Filtrar tareas">
+      <a class="filter-link {{ 'is-selected' if selected_filter == 'all' }}" href="{{ url_for('index', filter='all') }}"><span class="filter-icon">◷</span> Todas <span class="filter-count">{{ counts.total or 0 }}</span></a>
+      <a class="filter-link {{ 'is-selected' if selected_filter == 'active' }}" href="{{ url_for('index', filter='active') }}"><span class="filter-icon">○</span> Pendientes <span class="filter-count">{{ counts.active or 0 }}</span></a>
+      <a class="filter-link {{ 'is-selected' if selected_filter == 'completed' }}" href="{{ url_for('index', filter='completed') }}"><span class="filter-icon">✓</span> Completadas <span class="filter-count">{{ counts.completed or 0 }}</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-chip"><span class="avatar">{{ current_user.username[0]|upper }}</span><span class="user-name">{{ current_user.username }}</span></div>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="logout-button" type="submit" aria-label="Cerrar sesión" title="Cerrar sesión">↗</button>
+      </form>
+    </div>
+  </aside>
+  <main class="workspace">
+    <header class="topbar"><span class="date-label">TU TABLERO PERSONAL</span><span class="today-mark"><span></span> Un paso a la vez</span></header>
+    <section class="dashboard">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">{{ 'TODO EN SU LUGAR' if selected_filter == 'all' else ('POR HACER' if selected_filter == 'active' else 'LO QUE YA LOGRASTE') }}</p>
+          <h1>{{ 'Mis tareas' if selected_filter == 'all' else ('Pendientes' if selected_filter == 'active' else 'Completadas') }}</h1>
+        </div>
+        <div class="completion-stat"><span class="stat-number">{{ counts.completed or 0 }}</span><span class="stat-caption">hechas<br>hasta ahora</span></div>
+      </div>
+      <form class="quick-add" method="post" action="{{ url_for('create_task') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <span class="add-cross" aria-hidden="true">+</span>
+        <input name="title" type="text" maxlength="120" placeholder="¿Qué necesitas hacer?" aria-label="Título de la tarea" required>
+        <input name="notes" class="quick-notes" type="text" maxlength="500" placeholder="Añade un detalle (opcional)" aria-label="Notas opcionales">
+        <button class="button button-primary add-button" type="submit">Añadir <span aria-hidden="true">↗</span></button>
+      </form>
+      <div class="list-heading"><span>{{ 'TU LISTA' if tasks else 'TU ESPACIO' }}</span><span>{{ tasks|length }} {{ 'TAREA' if tasks|length == 1 else 'TAREAS' }}</span></div>
+      {% if tasks %}
+        <ul class="task-list">
+          {% for task in tasks %}
+            <li class="task-row {{ 'task-done' if task.completed }}">
+              <form method="post" action="{{ url_for('toggle_task', task_id=task.id) }}" class="toggle-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="check-button {{ 'checked' if task.completed }}" type="submit" aria-label="{{ 'Marcar pendiente' if task.completed else 'Completar' }}: {{ task.title }}">{% if task.completed %}✓{% endif %}</button>
+              </form>
+              <div class="task-copy"><p class="task-title">{{ task.title }}</p>{% if task.notes %}<p class="task-notes">{{ task.notes }}</p>{% endif %}</div>
+              <div class="task-actions"><a href="{{ url_for('edit_task', task_id=task.id) }}" class="action-link" aria-label="Editar {{ task.title }}" title="Editar">Editar</a><form method="post" action="{{ url_for('delete_task', task_id=task.id) }}" onsubmit="return confirm('¿Eliminar esta tarea?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="action-link delete-link" type="submit">Eliminar</button>
+              </form></div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state"><span class="empty-spark">✳</span><h2>{{ 'Aún no hay tareas.' if selected_filter != 'completed' else 'Todavía no hay tareas completadas.' }}</h2><p>{{ 'Anota una cosa pequeña para empezar.' if selected_filter != 'completed' else 'Cuando completes una tarea, aparecerá aquí.' }}</p></div>
+      {% endif %}
+      <footer class="list-footer"><span><i></i> Guardado en tu espacio personal</span><span>PAUSA · {{ counts.active or 0 }} POR HACER</span></footer>
+    </section>
+  </main>
+</div>
+{% endblock %}

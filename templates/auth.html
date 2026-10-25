@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Crear cuenta' if mode == 'register' else 'Iniciar sesión' }}{% endblock %}
+{% block body %}
+<main class="auth-shell">
+  <section class="auth-intro">
+    <a class="wordmark" href="{{ url_for('index') }}"><span class="brand-mark">p.</span> pausa</a>
+    <div class="intro-copy">
+      <p class="eyebrow">MENOS RUIDO. MÁS CLARIDAD.</p>
+      <h1>Haz espacio<br>para lo que <em>importa.</em></h1>
+      <p class="intro-note">Una lista sencilla para ordenar el día, a tu ritmo.</p>
+    </div>
+    <div class="orbit-note"><span class="orbit-dot"></span> Tu día, bajo control</div>
+    <div class="auth-sun" aria-hidden="true"><span></span></div>
+  </section>
+  <section class="auth-panel">
+    <div class="auth-form-wrap">
+      <p class="eyebrow">{{ 'EMPIEZA POR AQUÍ' if mode == 'register' else 'QUÉ BUENO VERTE' }}</p>
+      <h2>{{ 'Crea tu espacio' if mode == 'register' else 'Bienvenido de vuelta' }}</h2>
+      <p class="form-subtitle">{{ 'Regístrate para guardar tus tareas.' if mode == 'register' else 'Entra para continuar con tu día.' }}</p>
+      <form method="post" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="username">Nombre de usuario</label>
+        <input id="username" name="username" type="text" minlength="3" maxlength="32" autocomplete="username" required autofocus>
+        <label for="password">Contraseña</label>
+        <input id="password" name="password" type="password" minlength="8" maxlength="128" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required>
+        {% if mode == 'register' %}<p class="field-hint">Entre 8 y 128 caracteres.</p>{% endif %}
+        <button class="button button-primary auth-submit" type="submit">{{ 'Crear cuenta' if mode == 'register' else 'Iniciar sesión' }} <span aria-hidden="true">↗</span></button>
+      </form>
+      <p class="switch-auth">{{ '¿Ya tienes cuenta?' if mode == 'register' else '¿Primera vez por aquí?' }} <a href="{{ url_for('login' if mode == 'register' else 'register') }}">{{ 'Inicia sesión' if mode == 'register' else 'Crea una cuenta' }}</a></p>
+    </div>
+    <p class="auth-foot">Un lugar tranquilo para tus pendientes.</p>
+  </section>
+</main>
+{% endblock %}

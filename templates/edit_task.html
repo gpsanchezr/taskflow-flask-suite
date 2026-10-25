@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Editar tarea{% endblock %}
+{% block body %}
+<main class="edit-shell">
+  <a class="wordmark" href="{{ url_for('index') }}"><span class="brand-mark">p.</span> pausa</a>
+  <section class="edit-panel">
+    <a class="back-link" href="{{ url_for('index') }}">← Volver a mis tareas</a>
+    <p class="eyebrow">AJUSTA LOS DETALLES</p>
+    <h1>Editar tarea</h1>
+    <form method="post" class="edit-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="title">Tarea</label>
+      <input id="title" name="title" type="text" maxlength="120" value="{{ task.title }}" required autofocus>
+      <label for="notes">Notas <span>(opcional)</span></label>
+      <textarea id="notes" name="notes" rows="5" maxlength="500">{{ task.notes }}</textarea>
+      <div class="edit-actions"><a class="button button-quiet" href="{{ url_for('index') }}">Cancelar</a><button class="button button-primary" type="submit">Guardar cambios <span aria-hidden="true">↗</span></button></div>
+    </form>
+  </section>
+</main>
+{% endblock %}
